@@ -1,0 +1,6 @@
+{
+  "name": "CoffeeIntel — Ethiopian Coffee Market Intelligence",
+  "description": "Institutional-grade coffee market intelligence, AI price forecasting, multi-exchange tracking (ICE NY, ICE London, ECX), and export timing analytics for Ethiopian coffee exporters.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
