@@ -21,7 +21,30 @@ import {
 } from 'lucide-react';
 import { MarketBriefData, NewsItem, NewsCategory, NewsDigestData } from '../types';
 import { useLanguage } from '../i18n/LanguageContext';
-import { INITIAL_NEWS_DIGEST, INITIAL_NEWS_DIGEST_AM } from '../data/mockMarketData';
+
+const DEFAULT_DIGEST_EN: NewsDigestData = {
+  digestHeadline: 'Real-Time Global Coffee Intelligence & Export Digest',
+  digestSummary: 'Synthesis of live terminal futures (ICE NY Arabica & London Robusta), real origin weather anomalies in Brazil and Ethiopia, and active ocean shipping schedules.',
+  localExporterImpact: 'Physical differentials for Ethiopian washed coffees remain well supported. Exporters are advised to manage container dwell times at Djibouti port and monitor currency unification movements.',
+  keyActionItems: [
+    'Lock in forward differentials on high-grade washed lots (Yirgacheffe & Guji).',
+    'Review Djibouti ocean container vessel bookings 3 weeks in advance.',
+    'Align EUDR GPS polygon validation for EU-bound shipments.',
+  ],
+  generatedAt: 'Live Intel Stream',
+};
+
+const DEFAULT_DIGEST_AM: NewsDigestData = {
+  digestHeadline: 'የቀጥታ ዓለም አቀፍ የቡና ገበያ መረጃ እና የላኪዎች ትንተና',
+  digestSummary: 'የኒው ዮርክ እና የለንደን ቦርሳዎች የቀጥታ የዋጋ እንቅስቃሴ፣ የሚናስ ጌራይስ የአየር ሁኔታ እና የቀይ ባህር የባህር ጭነት ሁኔታ ውህደት።',
+  localExporterImpact: 'የኢትዮጵያ የታጠበ ቡና የኤፍኦቢ ልዩነት ዋጋ በጥሩ ደረጃ ላይ ይገኛል። ላኪዎች በጅቡቲ ወደብ የኮንቴነር መዘግየትን እና የብር ምንዛሪ ለውጥን ግምት ውስጥ ማስገባት አለባቸው።',
+  keyActionItems: [
+    'ለከፍተኛ ጥራት የታጠበ ቡና (ይርጋጨፌ እና ጉጂ) የቅድሚያ ውሎችን ያስሩ።',
+    'የጅቡቲ ወደብ የኮንቴነር ቦታ ማስያዣዎችን 3 ሳምንት አስቀድመው ያረጋግጡ።',
+    'የአውሮፓ ህብረት EUDR የጂኦ-ፖሊጎን ምዝገባ ሰነዶችን ያጠናቁ።',
+  ],
+  generatedAt: 'የቀጥታ መረጃ',
+};
 
 interface MarketBriefViewProps {
   brief: MarketBriefData;
@@ -43,7 +66,7 @@ export const MarketBriefView: React.FC<MarketBriefViewProps> = ({
   const [selectedSentiment, setSelectedSentiment] = useState<string>('ALL');
 
   // AI News Digest state
-  const defaultDigest = language === 'am' ? INITIAL_NEWS_DIGEST_AM : INITIAL_NEWS_DIGEST;
+  const defaultDigest = language === 'am' ? DEFAULT_DIGEST_AM : DEFAULT_DIGEST_EN;
   const [activeDigest, setActiveDigest] = useState<NewsDigestData>(propNewsDigest || defaultDigest);
   const [isGeneratingDigest, setIsGeneratingDigest] = useState<boolean>(false);
 
@@ -56,7 +79,7 @@ export const MarketBriefView: React.FC<MarketBriefViewProps> = ({
     if (propNewsDigest) {
       setActiveDigest(propNewsDigest);
     } else {
-      setActiveDigest(language === 'am' ? INITIAL_NEWS_DIGEST_AM : INITIAL_NEWS_DIGEST);
+      setActiveDigest(language === 'am' ? DEFAULT_DIGEST_AM : DEFAULT_DIGEST_EN);
     }
   }, [language, propNewsDigest]);
 
@@ -80,7 +103,6 @@ export const MarketBriefView: React.FC<MarketBriefViewProps> = ({
       }
     } catch (e) {
       console.warn('News digest fallback:', e);
-      setActiveDigest(language === 'am' ? INITIAL_NEWS_DIGEST_AM : INITIAL_NEWS_DIGEST);
     } finally {
       setIsGeneratingDigest(false);
     }

@@ -10,8 +10,11 @@ import {
   Scale,
   ShieldCheck,
   Languages,
+  Cpu,
+  LogOut,
+  User,
 } from 'lucide-react';
-import { PriceUnit } from '../types';
+import { PriceUnit, UserSession } from '../types';
 import { useLanguage } from '../i18n/LanguageContext';
 
 interface HeaderProps {
@@ -22,6 +25,10 @@ interface HeaderProps {
   onOpenCopilot: () => void;
   onOpenReport: () => void;
   onOpenAlerts: () => void;
+  onOpenSources?: () => void;
+  onOpenArchitecture?: () => void;
+  user?: UserSession | null;
+  onLogout?: () => void;
   isRefreshing: boolean;
   onRefreshData: () => void;
 }
@@ -34,6 +41,10 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenCopilot,
   onOpenReport,
   onOpenAlerts,
+  onOpenSources,
+  onOpenArchitecture,
+  user,
+  onLogout,
   isRefreshing,
   onRefreshData,
 }) => {
@@ -146,6 +157,35 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="font-mono text-amber-400">{currencyMode}</span>
           </button>
 
+          {/* Live Data Sources & Scraping Engine Registry */}
+          {onOpenSources && (
+            <button
+              id="open-sources-btn"
+              onClick={onOpenSources}
+              className="hidden md:flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-950/20 px-2.5 py-1.5 text-xs font-semibold text-emerald-300 hover:bg-emerald-950/50 hover:border-emerald-500/50 transition-colors"
+              title="Live Data Sources & Scraping Engine Registry"
+            >
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <span className="font-mono text-[11px]">Live Feeds</span>
+            </button>
+          )}
+
+          {/* System Architecture & How It Works Button */}
+          {onOpenArchitecture && (
+            <button
+              id="open-architecture-btn"
+              onClick={onOpenArchitecture}
+              className="hidden lg:flex items-center gap-1.5 rounded-lg border border-stone-800 bg-stone-900 px-2.5 py-1.5 text-xs font-semibold text-stone-300 hover:border-amber-500/40 hover:text-amber-300 transition-colors"
+              title="How It Works & System Architecture"
+            >
+              <Cpu className="h-3.5 w-3.5 text-amber-500" />
+              <span>{language === 'am' ? 'አሰራር' : 'Architecture'}</span>
+            </button>
+          )}
+
           {/* Refresh Data */}
           <button
             id="refresh-market-btn"
@@ -190,6 +230,45 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="hidden sm:inline">{t.aiCopilotBtn}</span>
             <span className="sm:hidden">AI</span>
           </button>
+
+          {/* Authenticated User Profile & Logout */}
+          {user && (
+            <div className="flex items-center gap-2 pl-2 border-l border-stone-800">
+              <div
+                className="hidden xl:flex items-center gap-2 rounded-lg border border-stone-800 bg-stone-900/80 px-2.5 py-1"
+                title={`${user.fullName} (${user.organization})`}
+              >
+                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-500/20 border border-amber-500/40 text-[11px] font-bold text-amber-300">
+                  {user.fullName.charAt(0)}
+                </div>
+                <div className="text-left">
+                  <div className="text-xs font-semibold text-stone-200 leading-tight flex items-center gap-1">
+                    <span>{user.fullName}</span>
+                    {user.isDemo && (
+                      <span className="text-[9px] px-1 py-0.2 rounded bg-amber-500/20 text-amber-300 font-mono">
+                        DEMO
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-[10px] text-stone-400 leading-none">
+                    {language === 'am' && user.roleAm ? user.roleAm : user.role}
+                  </div>
+                </div>
+              </div>
+
+              {onLogout && (
+                <button
+                  id="header-logout-btn"
+                  onClick={onLogout}
+                  className="flex items-center gap-1.5 rounded-lg border border-stone-800 bg-stone-900 px-2.5 py-1.5 text-xs font-semibold text-stone-400 hover:border-rose-500/40 hover:bg-rose-950/30 hover:text-rose-300 transition-colors"
+                  title={t.logoutBtn}
+                >
+                  <LogOut className="h-3.5 w-3.5 text-rose-400" />
+                  <span className="hidden sm:inline">{t.logoutBtn}</span>
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </header>

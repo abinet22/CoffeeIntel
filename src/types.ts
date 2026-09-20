@@ -250,3 +250,141 @@ export interface ExporterContractScenario {
   freightCostPerContainerUSD: number; // 1 container = ~320 bags of 60kg (approx 19.2 MT)
   weeksToWait: number;
 }
+
+export type SourcePriority = 'P1' | 'P2' | 'P3';
+export type SourceType = 'API' | 'RSS' | 'WEB' | 'REPORT' | 'DATA';
+
+export interface SourceRegistryItem {
+  id: string;
+  name: string;
+  country: string;
+  region: string;
+  category: string;
+  priority: SourcePriority;
+  sourceType: SourceType;
+  url: string;
+  status: 'LIVE' | 'CONNECTED' | 'SYNCED' | 'STANDBY';
+  lastSync: string;
+  itemCount: number;
+  notes: string;
+  notesAm?: string;
+}
+
+export interface OriginWeatherSummary {
+  id: string;
+  region: string;
+  country: string;
+  flag: string;
+  lat: number;
+  lon: number;
+  currentTempC: number;
+  currentPrecipitationMm: number;
+  humidityPercent: number;
+  dailyPrecipForecastMm: number[];
+  anomalyStatus: 'Normal' | 'Rainfall Deficit' | 'Excess Rain' | 'Flowering Stress';
+  anomalyStatusAm: string;
+  cropRiskAssessment: string;
+  cropRiskAssessmentAm: string;
+  lastUpdated: string;
+}
+
+export interface IntelligenceEventItem {
+  id: string;
+  title: string;
+  event: string;
+  country: string;
+  region: string;
+  commodity: 'Arabica' | 'Robusta' | 'Macro' | 'Logistics';
+  category: 'PRICE' | 'WEATHER' | 'CROP' | 'PRODUCTION' | 'EXPORT' | 'IMPORT' | 'SHIPPING' | 'REGULATION' | 'EUDR' | 'MACRO';
+  impact: string;
+  severity: 1 | 2 | 3 | 4 | 5;
+  sentiment: 'Bullish' | 'Bearish' | 'Neutral';
+  source: string;
+  url: string;
+  publishedAt: string;
+  exporterImpact: string;
+  exporterImpactAm: string;
+  proConType?: 'PRO' | 'CON' | 'NEUTRAL';
+  proConLabel?: string;
+  pillar?: 'Market' | 'Trade' | 'Weather' | 'Commodity' | 'Geopolitics' | 'Logistics' | 'News' | 'Origin';
+}
+
+export type PublicationType = 'MAGAZINE' | 'REPORT' | 'NEWS_DISPATCH';
+
+export interface PublicationItem {
+  id: string;
+  title: string;
+  publication: string;
+  type: PublicationType;
+  publishedDate: string;
+  authorOrOrg: string;
+  readTime: string;
+  summary: string;
+  fullExcerpt: string;
+  keyTakeaways: string[];
+  url: string;
+  proConTag: 'PRO' | 'CON' | 'NEUTRAL';
+  proConLabel: string;
+  pillars: ('Market' | 'Trade' | 'Weather' | 'Commodity' | 'Geopolitics' | 'Logistics' | 'News' | 'Origin')[];
+  impactMagnitude: 'High' | 'Medium' | 'Low';
+  relevantCommodities: string[];
+}
+
+export interface ProConSummaryReport {
+  headline: string;
+  marketPosture: string;
+  bullishScore: number; // e.g. 72%
+  bearishScore: number; // e.g. 28%
+  executiveSummary: string;
+  pros: {
+    title: string;
+    category: string;
+    impactMetric: string;
+    detail: string;
+    source: string;
+  }[];
+  cons: {
+    title: string;
+    category: string;
+    impactMetric: string;
+    mitigation: string;
+    source: string;
+  }[];
+  tacticalRoadmap: {
+    timeframe: string;
+    action: string;
+    impact: string;
+  }[];
+  generatedAt: string;
+}
+
+export type UserRole =
+  | 'Senior Exporter'
+  | 'Coffee Union Manager'
+  | 'Market Analyst'
+  | 'Guest Trader';
+
+export interface UserSession {
+  username: string;
+  fullName: string;
+  role: UserRole;
+  roleAm?: string;
+  organization: string;
+  token?: string;
+  loginTime: string;
+  isDemo?: boolean;
+}
+
+export interface DemoUserAccount {
+  username: string;
+  password: string;
+  fullName: string;
+  role: UserRole;
+  roleAm: string;
+  organization: string;
+  organizationAm: string;
+  badgeColor: string;
+  description: string;
+  descriptionAm: string;
+}
+

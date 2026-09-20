@@ -19,6 +19,8 @@ export interface Translations {
   // Navigation
   navOverview: string;
   navCMarkets: string;
+  navEventImpact: string;
+  navPublications: string;
   navPredictions: string;
   navBrief: string;
   navCalculator: string;
@@ -197,13 +199,32 @@ export interface Translations {
   copilotQuickQuestions: string[];
   copilotDisclaimer: string;
 
-  // Generic
+    // Generic
   loading: string;
   close: string;
   save: string;
   centsPerLb: string;
   usdPerKg: string;
   etbPerKg: string;
+
+  // Authentication & Login
+  loginTitle: string;
+  loginSubtitle: string;
+  loginBadge: string;
+  loginUsername: string;
+  loginPassword: string;
+  loginBtn: string;
+  loginLoggingIn: string;
+  loginRememberMe: string;
+  loginDemoAccounts: string;
+  loginDemoHint: string;
+  loginInstantDemo: string;
+  loginInvalidError: string;
+  loginCredentialsHint: string;
+  logoutBtn: string;
+  loggedInAs: string;
+  switchAccount: string;
+  demoNotice: string;
 }
 
 export const TRANSLATIONS: Record<Language, Translations> = {
@@ -224,6 +245,8 @@ export const TRANSLATIONS: Record<Language, Translations> = {
 
     navOverview: 'Market Overview',
     navCMarkets: 'Global C-Markets Live Chart',
+    navEventImpact: 'Event & Impact Engine',
+    navPublications: 'Publications & Reports Reader',
     navPredictions: 'AI Predictions',
     navBrief: 'Daily Intelligence Brief',
     navCalculator: 'Export Calculator',
@@ -401,6 +424,25 @@ export const TRANSLATIONS: Record<Language, Translations> = {
     centsPerLb: 'US Cents / Pound',
     usdPerKg: 'USD / Kilogram',
     etbPerKg: 'ETB / Kilogram',
+
+    // Authentication & Login
+    loginTitle: 'Coffee Intelligence Terminal',
+    loginSubtitle: 'Institutional Market Access for Ethiopian Coffee Exporters, Unions & Traders',
+    loginBadge: 'Exporter Security Gateway',
+    loginUsername: 'Username',
+    loginPassword: 'Password',
+    loginBtn: 'Sign In to Terminal',
+    loginLoggingIn: 'Verifying Credentials...',
+    loginRememberMe: 'Remember session on this device',
+    loginDemoAccounts: 'Select Demo Account',
+    loginDemoHint: 'Demo credentials: demo / demo123 (or select any persona below)',
+    loginInstantDemo: 'Instant Demo Access',
+    loginInvalidError: 'Invalid username or password. Please use the demo credentials provided below.',
+    loginCredentialsHint: 'Single-click any demo profile to test role-based exporter permissions:',
+    logoutBtn: 'Sign Out',
+    loggedInAs: 'Logged in as',
+    switchAccount: 'Switch User',
+    demoNotice: 'Demo Environment: Full live market feeds, ECX floor prices, and AI prediction models are fully unlocked.',
   },
 
   am: {
@@ -420,6 +462,8 @@ export const TRANSLATIONS: Record<Language, Translations> = {
 
     navOverview: 'የገበያ አጠቃላይ እይታ',
     navCMarkets: 'የአለም አቀፍ ሲ-ገበያዎች የቀጥታ ቻርት',
+    navEventImpact: 'የክስተት እና ተፅዕኖ ሞተር',
+    navPublications: 'የህትመቶች እና ሪፖርቶች ንባብ',
     navPredictions: 'የ AI ዋጋ ትንበያ',
     navBrief: 'ዕለታዊ የገበያ ማጠቃለያ',
     navCalculator: 'የወጪ ንግድ ካልኩሌተር',
@@ -597,5 +641,24 @@ export const TRANSLATIONS: Record<Language, Translations> = {
     centsPerLb: 'የአሜሪካ ሳንቲም / ፓውንድ',
     usdPerKg: 'ዶላር / ኪሎግራም',
     etbPerKg: 'የኢትዮጵያ ብር / ኪሎግራም',
+
+    // Authentication & Login
+    loginTitle: 'የቡና ገበያ መረጃ ተርሚናል',
+    loginSubtitle: 'ለኢትዮጵያ ቡና ላኪዎች፣ ህብረት ስራ ማህበራት እና ነጋዴዎች የተዘጋጀ ይፋዊ መግቢያ',
+    loginBadge: 'የላኪዎች ደህንነቱ የተጠበቀ መግቢያ',
+    loginUsername: 'የተጠቃሚ ስም',
+    loginPassword: 'የይለፍ ቃል',
+    loginBtn: 'ወደ ተርሚናል ግባ',
+    loginLoggingIn: 'ማረጋገጫ በመፈተሽ ላይ...',
+    loginRememberMe: 'በዚህ መሳሪያ ላይ አስታውሰኝ',
+    loginDemoAccounts: 'የሙከራ (ዴሞ) አካውንት ይምረጡ',
+    loginDemoHint: 'የሙከራ መለያ: demo / demo123 (ወይም ከታች ካሉት ይምረጡ)',
+    loginInstantDemo: 'ቀጥታ በሙከራ አካውንት ግባ',
+    loginInvalidError: 'የተሳሳተ የተጠቃሚ ስም ወይም የይለፍ ቃል። እባክዎ ከታች የተሰጡትን የሙከራ መለያዎች ይጠቀሙ።',
+    loginCredentialsHint: 'ፈጣን መግቢያ: ከታች ከተዘረዘሩት የሙከራ መለያዎች አንዱን ጠቅ ያድርጉ:',
+    logoutBtn: 'ውጣ',
+    loggedInAs: 'የገቡት በ:',
+    switchAccount: 'መለያ ቀይር',
+    demoNotice: 'የሙከራ ስርዓት: የቀጥታ ገበያዎች፣ የ ECX ዋጋዎች እና የ AI ትንበያ ሙሉ በሙሉ ክፍት ናቸው።',
   },
 };

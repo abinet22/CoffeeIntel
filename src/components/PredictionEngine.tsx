@@ -38,9 +38,10 @@ export const PredictionEngine: React.FC<PredictionEngineProps> = ({
     : (language === 'am' ? 'አይሲኢ አራቢካ መነሻ እና የኢትዮጵያ የታጠበ ቡና ፊዚካል' : 'ICE Arabica Benchmark & Ethiopian Washed Physicals');
 
   const isShortTerm = activeHorizon === 'SHORT';
-  const targetPrice = isShortTerm ? 257.4 : 268.0;
-  const rangeLow = isShortTerm ? 242.0 : 235.0;
-  const rangeHigh = isShortTerm ? 268.5 : 292.0;
+  const currentPrice = forecast?.currentPriceCentsLb || 277.20;
+  const targetPrice = isShortTerm ? (forecast?.expectedPriceCentsLb || 288.40) : (forecast?.expectedPriceCentsLb ? forecast.expectedPriceCentsLb + 9.5 : 298.0);
+  const rangeLow = isShortTerm ? (forecast?.rangeLowCentsLb || 272.0) : (forecast?.rangeLowCentsLb ? forecast.rangeLowCentsLb - 7.0 : 265.0);
+  const rangeHigh = isShortTerm ? (forecast?.rangeHighCentsLb || 298.5) : (forecast?.rangeHighCentsLb ? forecast.rangeHighCentsLb + 14.0 : 312.0);
 
   const signalLabel = language === 'am' ? 'አሁኑኑ በቅድሚያ ይሽጡ (STRONG SELL)' : 'STRONG SELL FORWARD';
 
@@ -118,7 +119,7 @@ export const PredictionEngine: React.FC<PredictionEngineProps> = ({
           {/* Expected Range & Confidence Band Visual */}
           <div className="rounded-lg border border-stone-800 bg-stone-900/90 p-3.5 text-xs">
             <div className="flex items-center justify-between text-stone-400 font-mono">
-              <span>{language === 'am' ? 'የአሁኑ:' : 'Current:'} 246.85¢/lb</span>
+              <span>{language === 'am' ? 'የአሁኑ:' : 'Current:'} {currentPrice.toFixed(2)}¢/lb</span>
               <span className="text-amber-400 font-bold">
                 {language === 'am' ? 'ዒላማ:' : 'Target:'} {targetPrice.toFixed(2)}¢/lb
               </span>
@@ -136,7 +137,7 @@ export const PredictionEngine: React.FC<PredictionEngineProps> = ({
               <div
                 className="absolute h-5 w-1 bg-stone-300 z-10"
                 style={{ left: '30%' }}
-                title="Current Spot Price: 246.85¢"
+                title={`Current Spot Price: ${currentPrice.toFixed(2)}¢`}
               />
               {/* Target prediction marker */}
               <div

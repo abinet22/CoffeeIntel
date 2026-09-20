@@ -62,13 +62,13 @@ export const AICopilotModal: React.FC<AICopilotModalProps> = ({ isOpen, onClose 
         'ለ 3 ኮንቴነር ይርጋጨፌ 2 ውል አሁኑኑ ላስር ወይስ ልጠብቅ?',
         'በሲዳማ ማጠቢያ ጣቢያዎች የቀይ ቼሪ አዋጭ መግዣ ዋጋ ስንት ነው?',
         'የቀይ ባህር የመርከብ ቀውስ በጅቡቲ ኤፍኦቢ ዋጋ ላይ ምን ተፅዕኖ አለው?',
-        'የብራዚል ድርቅ የአይሲኢ አራቢካን ከ 260¢ በላይ ያደርገዋል?',
+        'የብራዚል የአየር ሁኔታ የአይሲኢ አራቢካን ከ 290¢ በላይ ያደርገዋል?',
       ]
     : [
         'Should I lock in contracts for 3 containers of Yirga G2 now or wait?',
         'What is our breakeven raw cherry price at Sidama washing stations?',
         'How is the Red Sea shipping crisis affecting FOB Djibouti premiums?',
-        'Will the Brazilian drought push ICE Arabica above 260¢?',
+        'Will Brazilian weather conditions push ICE Arabica back above 290¢?',
       ];
 
   useEffect(() => {
@@ -117,8 +117,8 @@ export const AICopilotModal: React.FC<AICopilotModalProps> = ({ isOpen, onClose 
         id: `ai-${Date.now()}`,
         sender: 'assistant',
         text: language === 'am'
-          ? 'በአሁኑ የገበያ መረጃ መሰረት: አይሲኢ አራቢካ በ 246.85¢/lb እየተገበያየ ሲሆን በአውሮፓ መጋዘኖች ያለው የተረጋገጠ ክምችት በታሪክ ዝቅተኛ ደረጃ ላይ ይገኛል። የኢኮኖሜትሪክ ሞዴላችን በሚቀጥሉት 14-21 ቀናት የዋጋ ጭማሪን (+4.2%) ያመለክታል። የሚመከር ውሳኔ: አሁኑኑ የ 40% የቅድሚያ ውል በማሰር ከፍተኛውን የልዩነት ዋጋ ይያዙ፣ ቀሪውን 60% ደግሞ ለሚቀጥለው ወር ያቆዩ።'
-          : 'Based on current quantitative indicators: ICE Arabica is trading at 246.85¢/lb with certified European warehouse stocks at historic lows. Our econometric model projects supportive momentum over the next 14-21 days (+4.2% upward lean). Recommended action: Scale into 40% forward commitments today to lock in high premiums, and retain 60% uncommitted for next month.',
+          ? 'በአሁኑ የገበያ መረጃ መሰረት: አይሲኢ አራቢካ በ 277.20¢/lb እየተገበያየ ሲሆን በአውሮፓ መጋዘኖች ያለው የተረጋገጠ ክምችት በታሪክ ዝቅተኛ ደረጃ ላይ ይገኛል። የኢኮኖሜትሪክ ሞዴላችን በሚቀጥሉት 14-21 ቀናት የዋጋ ጭማሪን (+4.2%) ያመለክታል። የሚመከር ውሳኔ: አሁኑኑ የ 40% የቅድሚያ ውል በማሰር ከፍተኛውን የልዩነት ዋጋ ይያዙ፣ ቀሪውን 60% ደግሞ ለሚቀጥለው ወር ያቆዩ።'
+          : 'Based on current quantitative indicators: ICE Arabica is trading at 277.20¢/lb with certified European warehouse stocks at historic lows. Our econometric model projects supportive momentum over the next 14-21 days (+4.2% upward lean). Recommended action: Scale into 40% forward commitments today to lock in high premiums, and retain 60% uncommitted for next month.',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
       setMessages((prev) => [...prev, fallbackMsg]);
