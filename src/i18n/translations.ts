@@ -33,6 +33,12 @@ export interface Translations {
   tickerDjiboutiFreight: string;
   tickerIceStocks: string;
   tickerSpread: string;
+  tickerMomentum: string;
+  tickerSparklines: string;
+  ticker24hRange: string;
+  tickerBullishMomentum: string;
+  tickerBearishMomentum: string;
+  tickerNeutralMomentum: string;
 
   // Multi-Exchange Dashboard
   dashTitle: string;
@@ -258,6 +264,12 @@ export const TRANSLATIONS: Record<Language, Translations> = {
     tickerDjiboutiFreight: 'Djibouti-Europe Freight',
     tickerIceStocks: 'ICE Certified Stocks',
     tickerSpread: 'FX Parallel Premium',
+    tickerMomentum: 'Momentum',
+    tickerSparklines: 'Mini Sparklines',
+    ticker24hRange: '24h Range',
+    tickerBullishMomentum: 'Bullish Momentum',
+    tickerBearishMomentum: 'Bearish Momentum',
+    tickerNeutralMomentum: 'Neutral Range',
 
     dashTitle: 'Global & Domestic Multi-Exchange Benchmark',
     dashSubtitle: 'Live comparative tracking across ICE Coffee "C" (New York), ICE Robusta (London), and ECX Physical Floor Prices',
@@ -475,6 +487,12 @@ export const TRANSLATIONS: Record<Language, Translations> = {
     tickerDjiboutiFreight: 'የጅቡቲ-አውሮፓ የጭነት ዋጋ',
     tickerIceStocks: 'አይሲኢ የተረጋገጠ የቡና ክምችት',
     tickerSpread: 'የትይዩ ምንዛሪ ልዩነት',
+    tickerMomentum: 'የዋጋ አዝማሚያ (ሞመንተም)',
+    tickerSparklines: 'አነስተኛ የዋጋ መስመር (ስፓርክላይን)',
+    ticker24hRange: 'የ24 ሰዓት ወሰን',
+    tickerBullishMomentum: 'የዋጋ ጭማሪ አዝማሚያ',
+    tickerBearishMomentum: 'የዋጋ ቅናሽ አዝማሚያ',
+    tickerNeutralMomentum: 'የተረጋጋ ወሰን',
 
     dashTitle: 'ዓለም አቀፍ እና የአገር ውስጥ የቡና ገበያዎች የቀጥታ ዋጋ ንፅፅር',
     dashSubtitle: 'የኒው ዮርክ አይሲኢ አራቢካ፣ የለንደን ሮቡስታ እና የኢትዮጵያ ምርት ገበያ (ECX) የቀጥታ የዋጋ ክትትል',

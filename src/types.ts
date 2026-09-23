@@ -115,6 +115,9 @@ export interface HistoricalPricePoint {
   iceRobustaCents: number;
   ecxYirgacheffeCents: number;
   ecxSidamoCents: number;
+  ecxGujiCents?: number;
+  ecxLimuCents?: number;
+  ecxHararCents?: number;
   fobDifferentialCents: number;
   volume: number;
   predictedPrice?: number;

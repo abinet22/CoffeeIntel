@@ -1667,6 +1667,9 @@ export function generateRealHistoricalPoints(): HistoricalPricePoint[] {
       iceRobustaCents: lon,
       ecxYirgacheffeCents: Math.round((ny + 105.0) * 100) / 100,
       ecxSidamoCents: Math.round((ny + 55.0) * 100) / 100,
+      ecxGujiCents: Math.round((ny + 135.0) * 100) / 100,
+      ecxLimuCents: Math.round((ny + 35.0) * 100) / 100,
+      ecxHararCents: Math.round((ny + 42.0) * 100) / 100,
       fobDifferentialCents: 105.0,
       volume: Math.round(20000 + Math.random() * 15000),
     });

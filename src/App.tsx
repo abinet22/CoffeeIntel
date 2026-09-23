@@ -41,6 +41,7 @@ import { useLanguage } from './i18n/LanguageContext';
 import { LoginPage } from './components/LoginPage';
 import { Header } from './components/Header';
 import { TickerBar } from './components/TickerBar';
+import { HistoricalPriceRecharts } from './components/HistoricalPriceRecharts';
 import { MultiExchangeDashboard } from './components/MultiExchangeDashboard';
 import { LiveCMarketsView } from './components/LiveCMarketsView';
 import { ECXGradeBoard } from './components/ECXGradeBoard';
@@ -463,6 +464,7 @@ export default function App() {
         exchanges={exchanges}
         grades={grades}
         macroRates={macroRates}
+        historicalData={historicalData}
         onSelectGrade={(g) => {
           setSelectedGrade(g);
           setActiveTab('OVERVIEW');
@@ -586,6 +588,15 @@ export default function App() {
         {/* Tab 1: Overview & Price Feeds */}
         {activeTab === 'OVERVIEW' && (
           <div className="space-y-6">
+            <HistoricalPriceRecharts
+              historicalData={historicalData}
+              unit={unit}
+              currencyMode={currencyMode}
+              selectedGrade={selectedGrade}
+              onSelectGrade={setSelectedGrade}
+              exchanges={exchanges}
+            />
+
             <MultiExchangeDashboard
               exchanges={exchanges}
               historicalPoints={historicalData}

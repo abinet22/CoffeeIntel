@@ -20,7 +20,7 @@ import {
 function getGeminiClient(): GoogleGenAI | null {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    console.warn('[CoffeeIntel] GEMINI_API_KEY not configured. Operating in high-precision curated quant mode.');
+    console.info('[CoffeeIntel] GEMINI_API_KEY not configured. Operating in high-precision curated quant mode.');
     return null;
   }
   return new GoogleGenAI({
@@ -33,9 +33,25 @@ function getGeminiClient(): GoogleGenAI | null {
   });
 }
 
+// In-memory cache to minimize repetitive LLM calls and avoid hitting rate limits
+const aiResponseCache = new Map<string, { data: any; expiry: number }>();
+function getCachedResponse(key: string): any | null {
+  const entry = aiResponseCache.get(key);
+  if (entry && Date.now() < entry.expiry) {
+    return entry.data;
+  }
+  return null;
+}
+function setCachedResponse(key: string, data: any, ttlMs: number = 10 * 60 * 1000): void {
+  aiResponseCache.set(key, { data, expiry: Date.now() + ttlMs });
+}
+
+// Circuit breaker for models experiencing transient 429 quota or 503 demand spikes
+const modelCooldowns = new Map<string, number>();
+
 /**
- * Robust caller with multi-model fallback chain to handle transient 503/429
- * model capacity constraints gracefully.
+ * Robust caller with multi-model fallback chain and circuit breaker
+ * to handle transient 503/429 model capacity constraints gracefully.
  */
 async function callGeminiWithFallback(
   ai: GoogleGenAI,
@@ -46,10 +62,18 @@ async function callGeminiWithFallback(
     temperature?: number;
   }
 ): Promise<{ text: string; modelUsed: string } | null> {
-  // Ordered by preference: Primary flash -> High-throughput flash lite -> Latest flash
-  const modelsToTry = ['gemini-3.8-flash', 'gemini-3.1-flash-lite', 'gemini-flash-latest'];
+  // High-throughput flash-lite is fastest and has high quota headroom, followed by latest flash and 3.8-flash
+  const modelsToTry = ['gemini-3.1-flash-lite', 'gemini-flash-latest', 'gemini-3.8-flash'];
+  const now = Date.now();
 
   for (const model of modelsToTry) {
+    // Check if this model is in a temporary cooldown period
+    const cooldownUntil = modelCooldowns.get(model) || 0;
+    if (now < cooldownUntil) {
+      // Skip cooled-down model silently
+      continue;
+    }
+
     try {
       const config: any = {};
       if (options.systemInstruction) config.systemInstruction = options.systemInstruction;
@@ -67,13 +91,24 @@ async function callGeminiWithFallback(
         return { text, modelUsed: model };
       }
     } catch (err: any) {
-      const errorStr = err?.message || String(err);
-      // Log as non-fatal warning so temporary spikes don't trigger container alerts
-      console.warn(`[CoffeeIntel AI] Model ${model} temporarily unavailable: ${errorStr.slice(0, 110)}... Trying fallback model.`);
+      const errorMsg = String(err?.message || err || '');
+      const isQuotaError = errorMsg.includes('429') || errorMsg.includes('quota') || errorMsg.includes('RESOURCE_EXHAUSTED');
+      const isDemandError = errorMsg.includes('503') || errorMsg.includes('high demand') || errorMsg.includes('UNAVAILABLE');
+
+      // Set cooldown to prevent hammering the exhausted model
+      if (isQuotaError) {
+        modelCooldowns.set(model, now + 30 * 60 * 1000); // 30 min cooldown
+      } else if (isDemandError) {
+        modelCooldowns.set(model, now + 3 * 60 * 1000); // 3 min cooldown
+      } else {
+        modelCooldowns.set(model, now + 60 * 1000); // 1 min general cooldown
+      }
+
+      console.info(`[CoffeeIntel AI] Model ${model} is currently busy; switching to next provider in fallback chain.`);
     }
   }
 
-  console.warn('[CoffeeIntel AI] Upstream models busy; seamlessly activating institutional curated analytics.');
+  // All upstream models exhausted; cleanly activate domain quantitative intelligence
   return null;
 }
 
@@ -301,6 +336,17 @@ async function startServer() {
   app.post('/api/ai/brief', async (req: Request, res: Response) => {
     const language = req.body.language === 'am' ? 'am' : 'en';
     const isAmharic = language === 'am';
+    const cacheKey = `brief_${language}`;
+    const cached = getCachedResponse(cacheKey);
+    if (cached) {
+      return res.json({
+        success: true,
+        source: 'cached_intelligence',
+        brief: cached,
+        data: cached,
+      });
+    }
+
     const snapshot = getRealMarketSnapshot(language);
     const fallbackBrief = snapshot.brief;
     const engineState = getEngineState();
@@ -309,6 +355,7 @@ async function startServer() {
       const ai = getGeminiClient();
 
       if (!ai) {
+        setCachedResponse(cacheKey, fallbackBrief, 10 * 60 * 1000);
         return res.json({
           success: true,
           source: 'real_quants_engine',
@@ -368,7 +415,6 @@ Generate an executive daily market intelligence brief in JSON format matching th
   ] (3 items)
 }`;
 
-
       const aiResult = await callGeminiWithFallback(ai, {
         prompt,
         responseMimeType: 'application/json',
@@ -400,6 +446,8 @@ Generate an executive daily market intelligence brief in JSON format matching th
             generatedDate: dateStr,
           };
 
+          setCachedResponse(cacheKey, finalBrief, 10 * 60 * 1000);
+
           return res.json({
             success: true,
             source: aiResult.modelUsed,
@@ -407,11 +455,12 @@ Generate an executive daily market intelligence brief in JSON format matching th
             data: finalBrief,
           });
         } catch (jsonErr) {
-          console.warn('[CoffeeIntel AI] JSON parse failed, returning curated quantitative brief.');
+          // Fall back gracefully
         }
       }
 
       // Smooth fallback to curated quant brief
+      setCachedResponse(cacheKey, fallbackBrief, 10 * 60 * 1000);
       return res.json({
         success: true,
         source: 'curated_quants',
@@ -419,7 +468,7 @@ Generate an executive daily market intelligence brief in JSON format matching th
         data: fallbackBrief,
       });
     } catch (error: any) {
-      console.warn('[CoffeeIntel AI] Brief generation handled by curated fallback:', error?.message || error);
+      setCachedResponse(cacheKey, fallbackBrief, 10 * 60 * 1000);
       res.json({
         success: true,
         source: 'curated_quants',
@@ -433,6 +482,18 @@ Generate an executive daily market intelligence brief in JSON format matching th
   app.post('/api/ai/explain-forecast', async (req: Request, res: Response) => {
     const { gradeId, language } = req.body;
     const isAmharic = language === 'am';
+    const cacheKey = `forecast_${gradeId || 'default'}_${language}`;
+    const cached = getCachedResponse(cacheKey);
+    if (cached) {
+      return res.json({
+        success: true,
+        source: 'cached_intelligence',
+        explanation: cached.explanation,
+        factors: cached.factors,
+        grade: cached.grade,
+      });
+    }
+
     const snapshot = getRealMarketSnapshot(language);
     const targetGrade = snapshot.grades.find((g) => g.id === gradeId) || snapshot.grades[0];
     const engineState = getEngineState();
@@ -452,12 +513,12 @@ Generate an executive daily market intelligence brief in JSON format matching th
       const ai = getGeminiClient();
 
       if (!ai) {
+        const payload = { explanation: fallbackText, factors: snapshot.forecast.topDrivers, grade: targetGrade };
+        setCachedResponse(cacheKey, payload, 10 * 60 * 1000);
         return res.json({
           success: true,
           source: 'real_quants_engine',
-          explanation: fallbackText,
-          factors: snapshot.forecast.topDrivers,
-          grade: targetGrade,
+          ...payload,
         });
       }
 
@@ -487,29 +548,29 @@ Provide a concise 3-paragraph institutional explanation covering:
       });
 
       if (aiResult?.text) {
+        const payload = { explanation: aiResult.text, factors: snapshot.forecast.topDrivers, grade: targetGrade };
+        setCachedResponse(cacheKey, payload, 10 * 60 * 1000);
         return res.json({
           success: true,
           source: aiResult.modelUsed,
-          explanation: aiResult.text,
-          grade: targetGrade,
+          ...payload,
         });
       }
 
+      const payload = { explanation: fallbackText, factors: snapshot.forecast.topDrivers, grade: targetGrade };
+      setCachedResponse(cacheKey, payload, 10 * 60 * 1000);
       return res.json({
         success: true,
         source: 'real_quants_engine',
-        explanation: fallbackText,
-        factors: snapshot.forecast.topDrivers,
-        grade: targetGrade,
+        ...payload,
       });
     } catch (error: any) {
-      console.warn('[CoffeeIntel AI] Forecast explanation handled by curated fallback:', error?.message || error);
+      const payload = { explanation: fallbackText, factors: snapshot.forecast.topDrivers, grade: targetGrade };
+      setCachedResponse(cacheKey, payload, 10 * 60 * 1000);
       res.json({
         success: true,
         source: 'real_quants_engine',
-        explanation: fallbackText,
-        factors: snapshot.forecast.topDrivers,
-        grade: targetGrade,
+        ...payload,
       });
     }
   });
@@ -520,6 +581,19 @@ Provide a concise 3-paragraph institutional explanation covering:
     const conversationHistory = req.body.conversationHistory || [];
     const language = req.body.language === 'am' ? 'am' : 'en';
     const isAmharic = language === 'am';
+
+    const normalizedQuery = query.trim().toLowerCase();
+    const cacheKey = `copilot_${normalizedQuery}_${language}`;
+    const cached = getCachedResponse(cacheKey);
+    if (cached && (!conversationHistory || conversationHistory.length === 0)) {
+      return res.json({
+        success: true,
+        source: 'cached_copilot',
+        reply: cached,
+        answer: cached,
+      });
+    }
+
     const snapshot = getRealMarketSnapshot(language);
     const engineState = getEngineState();
     const icePrice = engineState.iceArabicaPrice;
@@ -533,6 +607,7 @@ Provide a concise 3-paragraph institutional explanation covering:
       const ai = getGeminiClient();
 
       if (!ai) {
+        setCachedResponse(cacheKey, fallbackMsg, 5 * 60 * 1000);
         return res.json({
           success: true,
           source: 'real_quants_engine',
@@ -568,6 +643,7 @@ Guidelines:
       });
 
       if (aiResult?.text) {
+        setCachedResponse(cacheKey, aiResult.text, 5 * 60 * 1000);
         return res.json({
           success: true,
           source: aiResult.modelUsed,
@@ -576,6 +652,7 @@ Guidelines:
         });
       }
 
+      setCachedResponse(cacheKey, fallbackMsg, 5 * 60 * 1000);
       return res.json({
         success: true,
         source: 'real_quants_engine',
@@ -583,7 +660,7 @@ Guidelines:
         answer: fallbackMsg,
       });
     } catch (error: any) {
-      console.warn('[CoffeeIntel AI] Copilot handled by curated fallback:', error?.message || error);
+      setCachedResponse(cacheKey, fallbackMsg, 5 * 60 * 1000);
       res.json({
         success: true,
         source: 'real_quants_engine',
